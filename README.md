@@ -38,8 +38,7 @@ Les compétences s'appuient sur la documentation officielle « Lojii - Les API
 disponibles » et sur la spécification OpenAPI de l'éditeur (openapi-1.0.0.json). Quand
 la documentation ne définit pas une notion, Claude le dit au lieu de l'interpréter.
 
-Support : hello@vantageos.agency. Licence : voir `LICENSE` (Functional Source License 1.1,
-licence future Apache 2.0).
+Support : hello@vantageos.agency. Licence propriétaire : usage réservé aux clients sous contrat, voir `LICENSE`.
 
 ## English
 
@@ -60,5 +59,4 @@ The skills follow the official documentation "Lojii - Les API disponibles" and t
 publisher's OpenAPI specification (openapi-1.0.0.json). Where the documentation does
 not define a notion, Claude says so instead of interpreting it.
 
-Support: hello@vantageos.agency. License: see `LICENSE` (Functional Source License 1.1,
-Apache 2.0 future license).
+Support: hello@vantageos.agency. Proprietary licence: use reserved to clients under contract, see `LICENSE`.
