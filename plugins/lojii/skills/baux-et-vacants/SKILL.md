@@ -32,7 +32,12 @@ Par contrat : "reference" (« Référence externe du contrat »), "kind" (« Typ
 "exit_on" (« Date de sortie des lieux »), "notice_given_on" (« Date de congé »),
 "notice_received_on" (« Date de réception du préavis »), "available_on" (« Date de disponibilité (si vacant) »), "not_let_reason" (« Raison de non-location »),
 "is_signed", "rent_ttc" (« Montant du loyer TTC »), "tenant_name" (« Nom complet du
-locataire principal »), "tenants", "lots".
+locataire principal »), "tenants", "lots". "tenants" porte une ligne par personne :
+"id", "name", "lojii_ids" (tous les identifiants Lojii de la personne) et
+"duplicated_in_lojii" (vrai quand Lojii tient deux fiches pour la même personne). Annoncer
+un locataire une seule fois ; si "duplicated_in_lojii" est vrai, le dire en une phrase
+(deux fiches Lojii, une personne) et donner les identifiants de "lojii_ids", sans compter
+deux locataires.
 
 Les garants, la révision, les honoraires, la garantie loyers impayés, le mode de règlement
 et l'usage que cite la documentation ne sont pas servis par ce connecteur.
@@ -104,7 +109,11 @@ Per contract: "reference", "kind" ("Type de dossier (Bail, Vacant, Candidat)"), 
 "notice_given_on" ("Date de congé"), "notice_received_on" ("Date de réception du
 préavis"), "available_on" ("Date de disponibilité (si vacant)"), "not_let_reason"
 ("Raison de non-location"), "is_signed", "rent_ttc" ("Montant du loyer TTC"),
-"tenant_name", "tenants", "lots".
+"tenant_name", "tenants", "lots". "tenants" holds one line per person: "id", "name",
+"lojii_ids" (every Lojii identifier of the person) and "duplicated_in_lojii" (true when
+Lojii holds two records for the same person). Present a tenant once; if
+"duplicated_in_lojii" is true, say so in one sentence (two Lojii records, one person) and
+give the identifiers from "lojii_ids", without counting two tenants.
 
 Guarantors, rent review, fees, rent guarantee insurance, payment method and use, which the
 documentation mentions, are not served by this connector.

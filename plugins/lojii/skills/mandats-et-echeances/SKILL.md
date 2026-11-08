@@ -13,7 +13,7 @@ date de fin.
 
 ### Services Lojii utilisés
 
-- **Mandats de gestion** : outil `list_management_mandates`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/api/v1/mandat_gestion. Vue cabinet. La documentation : « Mandats de gestion (vue cabinet et vue propriétaire) : numéro, type et modèle de mandat, dates de début, de fin et de résiliation, état, taux d'honoraires de gestion, couvertures d'assurance (GLI, GO, PNO), lots gérés, portefeuille de gestion et agence de rattachement ».
+- **Mandats de gestion** : outil `list_management_mandates`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion. Le connecteur lit sur la vue propriétaire l'ensemble des mandats de l'agence (gardé quelques minutes). La documentation : « Mandats de gestion (vue cabinet et vue propriétaire) : numéro, type et modèle de mandat, dates de début, de fin et de résiliation, état, taux d'honoraires de gestion, couvertures d'assurance (GLI, GO, PNO), lots gérés, portefeuille de gestion et agence de rattachement ».
 - **Mandats de gestion** : outil `get_owner_mandates`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion. Vue propriétaire, même service.
 - **Mandats de copropriété** : outil `list_syndic_mandates`. Documentation « Lojii - Les API disponibles », section 4. Syndic de copropriété ; spécification openapi-1.0.0.json · /api/api/v1/mandat_copropriete. La documentation : « Mandats de copropriété : numéro et date de début du mandat, état, date de fin de l'exercice en cours, … ». La spécification précise qu'il s'agit des mandats de copropriété actifs.
 - **Recherche d'acteurs** : outil `find_party`. Documentation « Lojii - Les API disponibles », section 3. Référentiel et organisation du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/acteur. Pour transformer le nom d'un propriétaire en identifiant.
@@ -22,7 +22,13 @@ date de fin.
 
 - Pour « les mandats qui arrivent à échéance », il faut une période : demander laquelle
   (par exemple « d'ici fin mars ») et la convertir en dates de fin minimale et maximale
-  ("ends_from", "ends_to"). Ne pas choisir l'horizon à la place de l'utilisateur.
+  ("ends_from", "ends_to"). Ne pas choisir l'horizon à la place de l'utilisateur. Un mandat
+  sans date de fin n'apparaît dans aucune fenêtre de fin : ne pas le compter comme échu.
+- Pour les mandats d'un immeuble : l'identifiant de l'immeuble ("building_id"), obtenu par
+  `find_party` (l'immeuble porte son "building_id") ou par la compétence lots-d-un-immeuble. Jamais son nom :
+  `list_management_mandates` refuse "building_name" ([unknown_argument]) ; si l'utilisateur
+  ne donne que le nom, chercher d'abord l'identifiant. Le filtre retient les mandats dont
+  l'un des lots est dans l'immeuble.
 - Préciser gestion ou syndic si l'utilisateur ne le dit pas ; sinon interroger les deux et
   les présenter séparément.
 - Pour un propriétaire : son identifiant, via `find_party`. `get_owner_mandates` refuse
@@ -32,7 +38,9 @@ date de fin.
 
 - `list_management_mandates` : "number" (« Référence externe »), "type", "model",
   "status", "start", "end", "terminated_on" (date de résiliation), "fee_rate_pct" (taux d'honoraires de gestion, en %), "gli_rate_pct" (taux GLI), "portfolio_id",
-  "agency_id".
+  "agency_id". Ces taux sont ceux de Lojii. Un taux vide (null) n'est pas un taux de 0 % :
+  Lojii ne l'a pas fourni. L'écrire « non fourni par Lojii » et l'expliquer en une phrase à
+  l'utilisateur ; ne jamais l'afficher comme 0 %, ni le remplacer par un autre taux.
 - `get_owner_mandates` : les mêmes champs, plus "owner_id" et les lots couverts ("lots" :
   numéro, désignation, début et fin de gestion, "gli"). GLI : « Garantie des Loyers Impayés » selon la spécification.
 - `list_syndic_mandates` : "condominium_name", "city", "state", "phase", "start", "end",
@@ -57,6 +65,7 @@ renvoie un message suivi d'un code entre crochets.
   entrées listées dans "accepted" (ou toutes celles listées dans "missing"), puis relancer.
 - [criteria_required] : aucun critère de recherche n'a été donné ; en demander un.
 - [not_found] : aucun enregistrement ne correspond à cet identifiant.
+- [unknown_argument] : l'outil refuse une entrée (par exemple « building_name » pour les mandats de gestion). Ce n'est pas « aucun mandat » : chercher l'identifiant de l'immeuble et relancer avec "building_id".
 - [rate_limited] ou [neoteem_rate_limited] : trop d'appels en peu de temps ; réessayer dans
   un instant.
 - [neoteem_ceiling] : le résultat est trop volumineux ; resserrer la recherche (une période
@@ -83,6 +92,8 @@ renvoie un message suivi d'un code entre crochets.
    ("nextCursor"). Un "upstream_defect" signifie que Lojii a renvoyé des doublons, retirés
    par le connecteur : le dire.
 5. Lecture seule : ce connecteur ne modifie rien dans Lojii.
+6. Un mandat se cherche par l'identifiant de l'immeuble, jamais par son nom. Un champ que
+   Lojii ne fournit pas se dit « non fourni par Lojii », pas « 0 ».
 
 ## English
 
@@ -90,7 +101,7 @@ To list the agency's mandates, one owner's mandates, and those reaching their en
 
 ### Lojii services used
 
-- **Mandats de gestion**: tool `list_management_mandates`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/api/v1/mandat_gestion. Agency view. The documentation: "Mandats de gestion (vue cabinet et vue propriétaire) : numéro, type et modèle de mandat, dates de début, de fin et de résiliation, état, taux d'honoraires de gestion, couvertures d'assurance (GLI, GO, PNO), lots gérés, portefeuille de gestion et agence de rattachement".
+- **Mandats de gestion**: tool `list_management_mandates`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion. The connector reads the agency's whole set of mandates on the owner view (kept a few minutes). The documentation: "Mandats de gestion (vue cabinet et vue propriétaire) : numéro, type et modèle de mandat, dates de début, de fin et de résiliation, état, taux d'honoraires de gestion, couvertures d'assurance (GLI, GO, PNO), lots gérés, portefeuille de gestion et agence de rattachement".
 - **Mandats de gestion**: tool `get_owner_mandates`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion. Owner view, same service.
 - **Mandats de copropriété**: tool `list_syndic_mandates`. Documentation "Lojii - Les API disponibles", section 4. Syndic de copropriété; specification openapi-1.0.0.json · /api/api/v1/mandat_copropriete. The documentation: "Mandats de copropriété : numéro et date de début du mandat, état, date de fin de l'exercice en cours, …". The specification says these are the active condominium mandates.
 - **Recherche d'acteurs**: tool `find_party`. Documentation "Lojii - Les API disponibles", section 3. Référentiel et organisation du cabinet; specification openapi-1.0.0.json · /api/api/v1/acteur. To turn an owner's name into an identifier.
@@ -99,7 +110,13 @@ To list the agency's mandates, one owner's mandates, and those reaching their en
 
 - For "mandates ending soon" you need a period: ask which one (for example "by the end of
   March") and turn it into minimum and maximum end dates ("ends_from", "ends_to"). Do not
-  pick the horizon for the user.
+  pick the horizon for the user. A mandate without an end date appears in no end window:
+  do not count it as expired.
+- For the mandates of a building: the building identifier ("building_id"), obtained through
+  `find_party` (the building carries its "building_id") or the lots-d-un-immeuble skill. Never its name:
+  `list_management_mandates` refuses "building_name" ([unknown_argument]); if the user gives
+  only the name, look up the identifier first. The filter keeps the mandates one of whose
+  lots is in the building.
 - Ask management or syndic if the user does not say; otherwise query both and show them
   separately.
 - For an owner: their identifier, through `find_party`. `get_owner_mandates` refuses
@@ -109,7 +126,10 @@ To list the agency's mandates, one owner's mandates, and those reaching their en
 
 - `list_management_mandates`: "number" ("Référence externe"), "type", "model", "status",
   "start", "end", "terminated_on" (termination date), "fee_rate_pct" (management fee
-  rate, %), "gli_rate_pct" (GLI rate), "portfolio_id", "agency_id".
+  rate, %), "gli_rate_pct" (GLI rate), "portfolio_id", "agency_id". These rates are
+  Lojii's own. An empty rate (null) is not a 0 % rate: Lojii did not provide it. Write
+  "not provided by Lojii" and explain it in one sentence to the user; never show it as
+  0 %, and never replace it with another rate.
 - `get_owner_mandates`: the same fields, plus "owner_id" and the covered lots ("lots":
   number, designation, management start and end, "gli"). GLI: "Garantie des Loyers Impayés" per the specification.
 - `list_syndic_mandates`: "condominium_name", "city", "state", "phase", "start", "end",
@@ -134,6 +154,7 @@ message followed by a code in square brackets.
   in "accepted" (or all of those listed in "missing"), then call again.
 - [criteria_required]: no search criterion was given; ask for one.
 - [not_found]: no record matches this identifier.
+- [unknown_argument]: the tool refuses an input (for example "building_name" for management mandates). This is not "no mandate": look up the building identifier and call again with "building_id".
 - [rate_limited] or [neoteem_rate_limited]: too many calls in a short time; try again in a
   moment.
 - [neoteem_ceiling]: the result is too large; narrow the search (a shorter period, one
@@ -157,3 +178,5 @@ message followed by a code in square brackets.
 4. An answer marked "truncated" is partial: say so and offer the next page ("nextCursor").
    An "upstream_defect" means Lojii returned duplicates, which the connector removed: say so.
 5. Read-only: this connector changes nothing in Lojii.
+6. A mandate is searched by building identifier, never by building name. A field Lojii does
+   not provide is said "not provided by Lojii", not "0".

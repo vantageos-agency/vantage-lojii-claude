@@ -13,12 +13,11 @@ services Lojii. Chaque rubrique dit de quel service elle vient.
 
 ### Services Lojii utilisés
 
-- **Mandats de gestion** : outil `list_management_mandates`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/api/v1/mandat_gestion. Mandats de gestion dont la date de fin tombe dans l'horizon choisi.
+- **Mandats de gestion** : outil `list_management_mandates`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion (ensemble des mandats de l'agence). Mandats de gestion dont la date de fin tombe dans l'horizon choisi.
 - **Mandats de copropriété** : outil `list_syndic_mandates`. Documentation « Lojii - Les API disponibles », section 4. Syndic de copropriété ; spécification openapi-1.0.0.json · /api/api/v1/mandat_copropriete. Mandats de copropriété dont la date de fin tombe dans l'horizon choisi.
 - **Contrats locataires** : outil `list_tenant_contracts`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/suivilocataire/v1/contrat_locataire. Les lots vacants (type Vacant).
 - **Ordres de service** : outil `list_work_orders`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/api/v1/os_gerance. Les ordres de service créés dans la semaine.
-- **Honoraires facturés** : outil `list_fee_invoices`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_facture. Les honoraires facturés dans la semaine.
-- **Paiements d'honoraires** : outil `list_fee_payments`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_paiement. Les honoraires encaissés dans la semaine.
+- **Honoraires facturés**, **Paiements d'honoraires** : outil `get_fee_totals`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_facture ("kind" "invoiced") et /api/api/v1/honoraire_paiement ("kind" "paid"). Le total facturé et le total encaissé de la semaine, calculés par le serveur.
 
 ### Ce qu'il faut avoir avant d'appeler
 
@@ -40,11 +39,17 @@ Une rubrique par service, dans cet ordre, chacune avec la source entre parenthè
    état.
 3. Lots vacants (Contrats locataires) : lots, « Date de disponibilité (si vacant) »,
    « Raison de non-location ».
-4. Ordres de service de la semaine (Ordres de service) : le service n'a pas de filtre de
-   date ; garder ceux dont la date de création tombe dans la semaine, et dire si la liste
-   lue était partielle.
-5. Honoraires de la semaine (Honoraires facturés, Paiements d'honoraires) : total facturé
-   et total encaissé, côte à côte.
+4. Ordres de service de la semaine (Ordres de service) : appeler avec "created_from" et
+   "created_to" aux dates de la semaine (filtre ajouté par le connecteur) ; titre, état,
+   date de création, immeuble.
+5. Honoraires de la semaine (Honoraires facturés, Paiements d'honoraires) : deux appels
+   `get_fee_totals`, "kind" "invoiced" (facturé) puis "kind" "paid" (encaissé), avec
+   "activity" et "date_from" / "date_to" aux dates de la semaine ; total facturé et total
+   encaissé, côte à côte. Un chiffre n'est le total de la semaine que si "scope" vaut
+   "complete". Sur "scope" "partial", l'écrire « total partiel, non disponible pour la
+   semaine » et rappeler avec les mêmes entrées et le "cursor" renvoyé ; sur un refus
+   [neoteem_ceiling], rappeler avec les mêmes entrées (et son "retry_cursor" s'il en
+   porte un). Ne jamais présenter une somme partielle comme le total.
 
 Une rubrique vide se dit « rien renvoyé » ; une rubrique refusée se dit « refusé », avec la
 raison. Ne pas ajouter de priorité, de recommandation ou d'alerte que les données ne
@@ -99,12 +104,11 @@ section says which service it comes from.
 
 ### Lojii services used
 
-- **Mandats de gestion**: tool `list_management_mandates`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/api/v1/mandat_gestion. Management mandates whose end date falls within the chosen horizon.
+- **Mandats de gestion**: tool `list_management_mandates`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion (the agency's whole set of mandates). Management mandates whose end date falls within the chosen horizon.
 - **Mandats de copropriété**: tool `list_syndic_mandates`. Documentation "Lojii - Les API disponibles", section 4. Syndic de copropriété; specification openapi-1.0.0.json · /api/api/v1/mandat_copropriete. Condominium mandates whose end date falls within the chosen horizon.
 - **Contrats locataires**: tool `list_tenant_contracts`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/suivilocataire/v1/contrat_locataire. Vacant lots (Vacant kind).
 - **Ordres de service**: tool `list_work_orders`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/api/v1/os_gerance. Work orders created during the week.
-- **Honoraires facturés**: tool `list_fee_invoices`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_facture. Fees invoiced during the week.
-- **Paiements d'honoraires**: tool `list_fee_payments`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_paiement. Fees collected during the week.
+- **Honoraires facturés**, **Paiements d'honoraires**: tool `get_fee_totals`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_facture ("kind" "invoiced") and /api/api/v1/honoraire_paiement ("kind" "paid"). The week's invoiced total and collected total, computed by the server.
 
 ### What you need before calling
 
@@ -123,10 +127,17 @@ One section per service, in this order, each with its source in brackets:
 2. Syndic mandate expiries (Mandats de copropriété): condominium, end date, state.
 3. Vacant lots (Contrats locataires): lots, "Date de disponibilité (si vacant)", "Raison
    de non-location".
-4. This week's work orders (Ordres de service): the service has no date filter; keep those
-   whose creation date falls in the week, and say whether the list read was partial.
-5. This week's fees (Honoraires facturés, Paiements d'honoraires): invoiced total and
-   collected total, side by side.
+4. This week's work orders (Ordres de service): call with "created_from" and
+   "created_to" set to the week's dates (a filter the connector adds); title, state,
+   creation date, building.
+5. This week's fees (Honoraires facturés, Paiements d'honoraires): two `get_fee_totals`
+   calls, "kind" "invoiced" (invoiced) then "kind" "paid" (collected), with "activity" and
+   "date_from" / "date_to" set to the week's dates; invoiced total and collected total, side
+   by side. A figure is the week's total only when "scope" is "complete". On "scope"
+   "partial", write "partial total, not available for the week" and call again with the
+   same inputs and the "cursor" returned; on a [neoteem_ceiling] refusal, call again with
+   the same inputs (and its "retry_cursor" if it carries one). Never present a partial sum
+   as the total.
 
 An empty section reads "nothing returned"; a refused section reads "refused", with the
 reason. Do not add a priority, recommendation or alert the data does not carry.

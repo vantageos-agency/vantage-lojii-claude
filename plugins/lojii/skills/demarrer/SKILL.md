@@ -35,6 +35,7 @@ Section 3. Référentiel et organisation du cabinet :
 - **Recherche d'acteurs** : outil `find_party`. Documentation « Lojii - Les API disponibles », section 3. Référentiel et organisation du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/acteur.
 - **Identité d'un acteur** : outil `identite_acteur`. Documentation « Lojii - Les API disponibles », section 3. Référentiel et organisation du cabinet ; spécification openapi-1.0.0.json · /api/public/v1/identite_acteur.
 - **Lots** : outil `list_lots`. Documentation « Lojii - Les API disponibles », section 3. Référentiel et organisation du cabinet ; spécification openapi-1.0.0.json · /api/public/v1/lots.
+- **Identité d'un acteur** (codes postaux d'immeubles) : outil `get_building_postal_codes`. Documentation « Lojii - Les API disponibles », section 3. Référentiel et organisation du cabinet ; spécification openapi-1.0.0.json · /api/public/v1/identite_acteur.
 - **Portefeuilles** : outil `list_portfolios`. Documentation « Lojii - Les API disponibles », section 3. Référentiel et organisation du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/portefeuille.
 
 Section 4. Syndic de copropriété :
@@ -45,7 +46,7 @@ Section 4. Syndic de copropriété :
 
 Section 5. Gérance locative :
 
-- **Mandats de gestion** : outil `list_management_mandates`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/api/v1/mandat_gestion.
+- **Mandats de gestion** : outil `list_management_mandates`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion (ensemble des mandats de l'agence ; un immeuble se donne par son identifiant).
 - **Mandats de gestion** : outil `get_owner_mandates`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion.
 - **Contrats locataires** : outil `list_tenant_contracts`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/suivilocataire/v1/contrat_locataire.
 - **Situation comptable locative** : outil `get_rental_situation`. Documentation « Lojii - Les API disponibles », section 5. Gérance locative ; spécification openapi-1.0.0.json · /api/suivilocataire/v1/situation_locative.
@@ -58,6 +59,8 @@ Section 5. Gérance locative :
 Section 6. Facturation et honoraires du cabinet :
 
 - **Honoraires facturés** : outil `list_fee_invoices`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_facture.
+- **Honoraires facturés** (total d'une période, aussi lettrés ou encaissés) : outil `get_fee_totals`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_facture.
+- **Honoraires facturés** (vacations par mois) : outil `get_vacation_fee_totals`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_facture.
 - **Lettrages d'honoraires** : outil `list_fee_settlements`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_lettrage.
 - **Paiements d'honoraires** : outil `list_fee_payments`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_paiement.
 
@@ -133,6 +136,7 @@ Section 3. Référentiel et organisation du cabinet:
 - **Recherche d'acteurs**: tool `find_party`. Documentation "Lojii - Les API disponibles", section 3. Référentiel et organisation du cabinet; specification openapi-1.0.0.json · /api/api/v1/acteur.
 - **Identité d'un acteur**: tool `identite_acteur`. Documentation "Lojii - Les API disponibles", section 3. Référentiel et organisation du cabinet; specification openapi-1.0.0.json · /api/public/v1/identite_acteur.
 - **Lots**: tool `list_lots`. Documentation "Lojii - Les API disponibles", section 3. Référentiel et organisation du cabinet; specification openapi-1.0.0.json · /api/public/v1/lots.
+- **Identité d'un acteur** (building postal codes): tool `get_building_postal_codes`. Documentation "Lojii - Les API disponibles", section 3. Référentiel et organisation du cabinet; specification openapi-1.0.0.json · /api/public/v1/identite_acteur.
 - **Portefeuilles**: tool `list_portfolios`. Documentation "Lojii - Les API disponibles", section 3. Référentiel et organisation du cabinet; specification openapi-1.0.0.json · /api/api/v1/portefeuille.
 
 Section 4. Syndic de copropriété:
@@ -143,7 +147,7 @@ Section 4. Syndic de copropriété:
 
 Section 5. Gérance locative:
 
-- **Mandats de gestion**: tool `list_management_mandates`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/api/v1/mandat_gestion.
+- **Mandats de gestion**: tool `list_management_mandates`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion (the agency's whole set of mandates; a building is given by its identifier).
 - **Mandats de gestion**: tool `get_owner_mandates`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/proprietaire/v1/mandat_gestion.
 - **Contrats locataires**: tool `list_tenant_contracts`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/suivilocataire/v1/contrat_locataire.
 - **Situation comptable locative**: tool `get_rental_situation`. Documentation "Lojii - Les API disponibles", section 5. Gérance locative; specification openapi-1.0.0.json · /api/suivilocataire/v1/situation_locative.
@@ -156,6 +160,8 @@ Section 5. Gérance locative:
 Section 6. Facturation et honoraires du cabinet:
 
 - **Honoraires facturés**: tool `list_fee_invoices`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_facture.
+- **Honoraires facturés** (total of a period, also matched or collected): tool `get_fee_totals`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_facture.
+- **Honoraires facturés** (vacation fees per month): tool `get_vacation_fee_totals`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_facture.
 - **Lettrages d'honoraires**: tool `list_fee_settlements`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_lettrage.
 - **Paiements d'honoraires**: tool `list_fee_payments`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_paiement.
 

@@ -12,7 +12,7 @@
       "name": "lojii",
       "source": "./plugins/lojii",
       "description": "Lojii for Claude: read your agency's Lojii data in plain words — people and buildings, lots, portfolios, management and syndic mandates, leases and vacancies, tenant and owner accounts, budgets, supplier contracts, work orders, condominium files and agency fees. Read-only; each person signs in with their own Lojii access.",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "author": {
         "name": "VantageOS",
         "email": "hello@vantageos.agency"

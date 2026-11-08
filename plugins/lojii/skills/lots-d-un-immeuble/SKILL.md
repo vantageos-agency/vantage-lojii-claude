@@ -13,6 +13,7 @@ Pour obtenir les lots d'un immeuble, ou un ou plusieurs lots précis.
 ### Service Lojii utilisé
 
 - **Lots** : outil `list_lots`. Documentation « Lojii - Les API disponibles », section 3. Référentiel et organisation du cabinet ; spécification openapi-1.0.0.json · /api/public/v1/lots. La documentation : « Lots d'un immeuble ou sélection de lots, avec possibilité d'obtenir dans le même appel le bâtiment de rattachement, le volet gestion (avec le propriétaire) et le volet copropriété (avec le copropriétaire) ».
+- **Identité d'un acteur** : outil `get_building_postal_codes`. Documentation « Lojii - Les API disponibles », section 3. Référentiel et organisation du cabinet ; spécification openapi-1.0.0.json · /api/public/v1/identite_acteur. Le code postal et la ville d'un ou plusieurs immeubles.
 
 ### Ce qu'il faut avoir avant d'appeler
 
@@ -20,12 +21,21 @@ Au moins un critère : l'identifiant de l'immeuble ("building_id"), l'identifian
 plusieurs identifiants de lots, le nom de l'immeuble (« Nom de l'immeuble (recherche partielle) ») ou le numéro de lot (« Numéro du lot »). Sans critère, l'outil refuse
 [criteria_required] : demander le nom de l'immeuble.
 
+Pour le code postal ou l'arrondissement : `get_building_postal_codes` avec "building_ids"
+(les "building_id" renvoyés par `list_lots`, 1 à 50).
+
 ### Lire la réponse
 
 Par lot : "designation", "code", "type", "type_detail", "address", "floor", "rooms",
-"living_area_m2", "is_main", "building_id", et le bâtiment de rattachement
+"living_area_m2", "lot_surface_carrez" (surface Carrez, souvent vide : la dire « non
+fournie », jamais 0), "is_main", "building_id", et le bâtiment de rattachement
 ("sub_building_id", "sub_building_address"). Présenter les lots tels que renvoyés, sans
 regrouper ni compléter.
+
+Codes postaux, par immeuble : "postal_code" et "city" tels que Lojii les enregistre (un code
+qui n'a pas cinq chiffres est servi vide). Un immeuble en "status" "unavailable" n'a pas de
+valeur : dire « non disponible » avec sa "reason", ne jamais en deviner une, et proposer de
+rappeler plus tard.
 
 Le volet gestion (propriétaire) et le volet copropriété (copropriétaire) que cite la
 documentation ne sont pas servis par cet outil : pour le propriétaire, utiliser la
@@ -81,6 +91,7 @@ To get the lots of a building, or one or several specific lots.
 ### Lojii service used
 
 - **Lots**: tool `list_lots`. Documentation "Lojii - Les API disponibles", section 3. Référentiel et organisation du cabinet; specification openapi-1.0.0.json · /api/public/v1/lots. The documentation: "Lots d'un immeuble ou sélection de lots, avec possibilité d'obtenir dans le même appel le bâtiment de rattachement, le volet gestion (avec le propriétaire) et le volet copropriété (avec le copropriétaire)".
+- **Identité d'un acteur**: tool `get_building_postal_codes`. Documentation "Lojii - Les API disponibles", section 3. Référentiel et organisation du cabinet; specification openapi-1.0.0.json · /api/public/v1/identite_acteur. The postal code and city of one or several buildings.
 
 ### What you need before calling
 
@@ -89,12 +100,19 @@ several lot identifiers, the building name ("Nom de l'immeuble (recherche partie
 the lot number ("Numéro du lot"). Without a criterion the tool refuses
 [criteria_required]: ask for the building name.
 
+For the postal code or the arrondissement: `get_building_postal_codes` with "building_ids"
+(the "building_id" values returned by `list_lots`, 1 to 50).
+
 ### Reading the answer
 
 Per lot: "designation", "code", "type", "type_detail", "address", "floor", "rooms",
-"living_area_m2", "is_main", "building_id", and the attached building
-("sub_building_id", "sub_building_address"). Present the lots as returned, without
-grouping or completing them.
+"living_area_m2", "lot_surface_carrez" (Carrez area, often empty: say "not provided",
+never 0), "is_main", "building_id", and the attached building ("sub_building_id",
+"sub_building_address"). Present the lots as returned, without grouping or completing them.
+
+Postal codes, per building: "postal_code" and "city" as Lojii records them (a code that is
+not five digits is served empty). A building with "status" "unavailable" has no value: say
+"not available" with its "reason", never guess one, and offer to call again later.
 
 The management part (owner) and the condominium part (co-owner) the documentation mentions
 are not served by this tool: for the owner use the mandats-et-echeances skill; for the

@@ -17,9 +17,20 @@ Pour lister les ordres de service et suivre l'avancement des travaux.
 ### Ce qu'il faut avoir avant d'appeler
 
 Aucune entrée obligatoire. Facultatif : un terme de recherche d'au moins deux caractères
-(« Terme de recherche global appliqué sur les libellés, références et noms des acteurs (insensible aux accents) »). Le service n'a pas de filtre de date : pour « les ordres de la
-semaine », lire la date de création des ordres renvoyés, et dire si la liste est
-partielle.
+(« Terme de recherche global appliqué sur les libellés, références et noms des acteurs (insensible aux accents) »). Le service Lojii n'a ni filtre d'état, ni filtre de date
+de création, ni filtre par immeuble ; le connecteur les ajoute :
+
+- "state" : un libellé d'état, comparé exactement (sans casse ni accent) ; reprendre un
+  libellé tel que Lojii l'a renvoyé, jamais un libellé deviné ;
+- "created_from" et "created_to" : la période de création (AAAA-MM-JJ) ;
+- "building_id" : l'identifiant de l'immeuble (trouvé par la compétence lots-d-un-immeuble
+  ou trouver-un-acteur), jamais son nom ;
+- "newest_first" : du plus récent au plus ancien (par défaut dès qu'un filtre est posé).
+
+Avec l'un de ces filtres, le connecteur lit la liste entière une fois (une dizaine de
+secondes) puis filtre ; une liste qui ne peut pas être lue en entier est refusée, jamais
+servie tronquée. Pour « les ordres de la semaine », passer "created_from" et "created_to" et
+annoncer les dates.
 
 ### Lire la réponse
 
@@ -80,8 +91,19 @@ To list work orders and follow the progress of works.
 
 ### What you need before calling
 
-No required input. Optional: a search term of at least two characters ("Terme de recherche global appliqué sur les libellés, références et noms des acteurs (insensible aux accents)"). The service has no date filter: for "this week's orders", read the creation
-date of the orders returned, and say whether the list is partial.
+No required input. Optional: a search term of at least two characters ("Terme de recherche global appliqué sur les libellés, références et noms des acteurs (insensible aux accents)"). The Lojii service has no state filter, no creation-date filter and no building
+filter; the connector adds them:
+
+- "state": a state label, matched exactly (case and accent-insensitive); reuse a label as
+  Lojii returned it, never a guessed one;
+- "created_from" and "created_to": the creation period (YYYY-MM-DD);
+- "building_id": the building identifier (found with the lots-d-un-immeuble or
+  trouver-un-acteur skill), never its name;
+- "newest_first": newest first (the default once a filter is set).
+
+With any of these filters the connector reads the whole list once (about ten seconds) and
+then filters; a list that cannot be read whole is refused, never served cut. For "this
+week's orders", pass "created_from" and "created_to" and state the dates.
 
 ### Reading the answer
 

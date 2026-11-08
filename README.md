@@ -34,6 +34,14 @@ Ce que vous obtenez :
 Pour commencer, demandez « Qu'est-ce que Lojii peut faire pour moi ? » ou lancez la
 compétence `demarrer`.
 
+À savoir :
+
+- Les mandats de gestion se cherchent par l'identifiant de l'immeuble, pas par son nom :
+  Claude retrouve l'identifiant lui-même. Une valeur que Lojii ne fournit pas (un taux
+  d'honoraires ou de GLI, par exemple) s'affiche « non fourni par Lojii », jamais « 0 ».
+- Ordres de service : filtres par état, période de création et immeuble. Lojii ne les
+  propose pas : le connecteur lit la liste entière (une dizaine de secondes) puis filtre.
+
 Les compétences s'appuient sur la documentation officielle « Lojii - Les API
 disponibles » et sur la spécification OpenAPI de l'éditeur (openapi-1.0.0.json). Quand
 la documentation ne définit pas une notion, Claude le dit au lieu de l'interpréter.
@@ -54,6 +62,14 @@ What it gives you:
   rights. No key is stored in the plugin.
 - Read-only: the plugin changes nothing in Lojii.
 - Skills: `demarrer`, `trouver-un-acteur`, `lots-d-un-immeuble`, `portefeuilles`, `mandats-et-echeances`, `baux-et-vacants`, `compte-locataire`, `compte-proprietaire`, `budgets`, `contrats-fournisseurs`, `ordres-de-service`, `dossier-copropriete`, `honoraires-du-cabinet`, `point-hebdomadaire`.
+
+Good to know:
+
+- Management mandates are searched by building identifier, not by building name: Claude
+  looks the identifier up itself. A value Lojii does not provide (a management fee or GLI
+  rate, for example) is shown as "not provided by Lojii", never as "0".
+- Work orders: filters by state, creation period and building. Lojii does not offer them:
+  the connector reads the whole list (about ten seconds), then filters.
 
 The skills follow the official documentation "Lojii - Les API disponibles" and the
 publisher's OpenAPI specification (openapi-1.0.0.json). Where the documentation does

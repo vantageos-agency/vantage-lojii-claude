@@ -29,7 +29,8 @@ Par écriture : "date", "journal" et "journal_label", "label", "debit", "credit"
 (« Montant récupérable locataire »), "third_party_name" (« Nom du tiers associé à
 l'écriture », vide si l'écriture n'a pas de tiers), "building_id", "budget_id". Totaux :
 "entries", "debit", "credit", et "balance", que le connecteur calcule comme débit moins
-crédit sur la sélection.
+crédit sur la sélection. Si "window_complete" est faux, la sélection n'a pas été lue en
+entier : les totaux et le solde sont un total partiel, à dire comme tel.
 
 ### Ce que la documentation ne définit pas
 
@@ -97,7 +98,8 @@ Per entry: "date", "journal" and "journal_label", "label", "debit", "credit", "h
 "vat", "ttc", "deductible" ("Montant déductible fiscalement"), "recoverable" ("Montant récupérable locataire"), "third_party_name" ("Nom du tiers associé à l'écriture", empty
 when the entry has no third party), "building_id", "budget_id". Totals: "entries",
 "debit", "credit", and "balance", which the connector computes as debit minus credit over
-the selection.
+the selection. If "window_complete" is false, the selection was not read whole: the totals
+and the balance are a partial total, to be said as such.
 
 ### What the documentation does not define
 

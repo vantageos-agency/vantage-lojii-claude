@@ -17,6 +17,8 @@ gérance.
 - **Honoraires facturés** : outil `list_fee_invoices`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_facture. Facturés. La documentation : « Pièces d'honoraires : date, libellé, montants HT, TVA et TTC, détail des lignes, journal comptable, mandant, portefeuilles comptable et gestionnaire, indicateur d'annulation ».
 - **Lettrages d'honoraires** : outil `list_fee_settlements`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_lettrage. Lettrés. La documentation : « Rapprochement entre factures et règlements : date de lettrage, montants au débit et au crédit, montant TTC, traçabilité des annulations ».
 - **Paiements d'honoraires** : outil `list_fee_payments`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_paiement. Encaissés. La documentation : « Encaissements effectifs rattachés aux factures d'honoraires : date, libellé, montant, journal, mandant, traçabilité des annulations ».
+- **Honoraires facturés**, **Lettrages d'honoraires**, **Paiements d'honoraires** (total d'une période) : outil `get_fee_totals`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_facture, /api/api/v1/honoraire_lettrage ou /api/api/v1/honoraire_paiement selon "kind". UN total sur un mois ou une période, chaque pièce comptée une fois, calculé par le serveur.
+- **Honoraires facturés** (vacations) : outil `get_vacation_fee_totals`. Documentation « Lojii - Les API disponibles », section 6. Facturation et honoraires du cabinet ; spécification openapi-1.0.0.json · /api/api/v1/honoraire_facture. Montant et nombre des lignes de vacation, par mois, additionnés par le serveur sur le mois entier.
 
 ### Ce qu'il faut avoir avant d'appeler
 
@@ -34,6 +36,14 @@ et les annoncer.
 La période ne porte pas sur la même date selon l'outil : « Date d'écriture » pour les
 honoraires facturés, « Date de lettrage » pour les lettrages, « Date de paiement » pour les
 paiements.
+
+Pour le total d'un mois ou d'une période : `get_fee_totals` avec "kind" ("invoiced" pour
+les facturés, "settled" pour les lettrés, "paid" pour les encaissés), "activity" (le même
+code, obligatoire) et la période : "month" (AAAA-MM) ou "date_from" et "date_to".
+
+Pour les vacations par mois : `get_vacation_fee_totals` avec "from_month" et "to_month"
+(AAAA-MM, 12 mois au plus) ; "activity" est facultatif (par défaut, les activités
+configurées).
 
 ### Lire la réponse
 
@@ -61,9 +71,29 @@ Les trois outils d'honoraires renvoient des totaux calculés sur la page servie.
   trimestre ou de la période demandée.
 - Ne jamais additionner les totaux de plusieurs pages : une même pièce peut figurer sur deux
   pages, et la somme la compterait deux fois.
-- Dire que le total de la période n'est pas encore disponible depuis ces outils. On peut
-  proposer de montrer la page suivante ("nextCursor") pour voir d'autres lignes, sans
-  cumuler ses totaux.
+- Pour le total de la période, utiliser `get_fee_totals` (ci-dessous). On peut aussi
+  montrer la page suivante ("nextCursor") pour voir d'autres lignes, sans cumuler ses
+  totaux.
+
+### Total d'une période : `get_fee_totals`, et seulement quand il est complet
+
+- Le chiffre est le total de la période UNIQUEMENT quand "scope" vaut "complete".
+- "scope" "partial" ("window_complete" faux) : le serveur a épuisé son budget de temps ; la
+  réponse porte un "cursor". Ce n'est pas un total : l'écrire « total partiel, non
+  disponible pour la période » et rappeler l'outil avec les mêmes entrées et ce "cursor",
+  jusqu'à "complete" (un mois demande souvent plusieurs appels).
+- Un refus [neoteem_ceiling] avec "retry_cursor" : rappeler avec les mêmes entrées et ce
+  curseur, rien n'est perdu. Sans curseur, un mois clos est en cours de calcul : rappeler
+  avec les mêmes entrées. Dans les deux cas, aucun total n'est disponible pour l'instant.
+- Ne jamais présenter une somme partielle comme le total, ni additionner soi-même des
+  totaux partiels.
+
+### Vacations : un code à confirmer, un mois indisponible n'est pas 0
+
+Le code nature compté comme vacation n'est pas confirmé par le cabinet : chaque chiffre porte
+un "flag" (« à confirmer par » le cabinet) ; le citer avec le chiffre, toujours. Un mois en
+"status" "unavailable" n'a pas de chiffre : l'écrire « non disponible », jamais 0, ne pas
+l'additionner aux autres, et proposer de rappeler plus tard.
 
 ### Ce que la documentation ne définit pas
 
@@ -118,6 +148,8 @@ fees collected. This domain covers syndic and management alike.
 - **Honoraires facturés**: tool `list_fee_invoices`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_facture. Invoiced. The documentation: "Pièces d'honoraires : date, libellé, montants HT, TVA et TTC, détail des lignes, journal comptable, mandant, portefeuilles comptable et gestionnaire, indicateur d'annulation".
 - **Lettrages d'honoraires**: tool `list_fee_settlements`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_lettrage. Matched. The documentation: "Rapprochement entre factures et règlements : date de lettrage, montants au débit et au crédit, montant TTC, traçabilité des annulations".
 - **Paiements d'honoraires**: tool `list_fee_payments`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_paiement. Collected. The documentation: "Encaissements effectifs rattachés aux factures d'honoraires : date, libellé, montant, journal, mandant, traçabilité des annulations".
+- **Honoraires facturés**, **Lettrages d'honoraires**, **Paiements d'honoraires** (total of a period): tool `get_fee_totals`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_facture, /api/api/v1/honoraire_lettrage or /api/api/v1/honoraire_paiement depending on "kind". ONE total over a month or a period, each piece counted once, computed by the server.
+- **Honoraires facturés** (vacations): tool `get_vacation_fee_totals`. Documentation "Lojii - Les API disponibles", section 6. Facturation et honoraires du cabinet; specification openapi-1.0.0.json · /api/api/v1/honoraire_facture. Amount and count of vacation lines, per month, summed by the server over the whole month.
 
 ### What you need before calling
 
@@ -133,6 +165,13 @@ Syndic or Gérance. If the user says "this month", derive the dates and state th
 
 The period does not apply to the same date in each tool: "Date d'écriture" for invoiced
 fees, "Date de lettrage" for matchings, "Date de paiement" for payments.
+
+For the total of a month or a period: `get_fee_totals` with "kind" ("invoiced" for invoiced
+fees, "settled" for matchings, "paid" for payments), "activity" (the same code, required)
+and the period: "month" (YYYY-MM) or "date_from" and "date_to".
+
+For vacation fees per month: `get_vacation_fee_totals` with "from_month" and "to_month"
+(YYYY-MM, at most 12 months); "activity" is optional (default: the configured activities).
 
 ### Reading the answer
 
@@ -159,8 +198,27 @@ The three fee tools return totals computed over the page they serve. The field
   asked for.
 - Never add the totals of several pages together: the same piece can appear on two pages,
   and the sum would count it twice.
-- Say that the period total is not available yet from these tools. You may offer to show
-  the next page ("nextCursor") to see more lines, without adding up its totals.
+- For the period total, use `get_fee_totals` (below). You may also show the next page
+  ("nextCursor") to see more lines, without adding up its totals.
+
+### Period total: `get_fee_totals`, and only when it is complete
+
+- The figure is the period total ONLY when "scope" is "complete".
+- "scope" "partial" ("window_complete" false): the server ran out of its time budget; the
+  answer carries a "cursor". This is not a total: write "partial total, not available for
+  the period" and call the tool again with the same inputs and that "cursor", until
+  "complete" (a month often takes several calls).
+- A [neoteem_ceiling] refusal with "retry_cursor": call again with the same inputs and that
+  cursor, nothing is lost. Without a cursor, a closed month is still being computed: call
+  again with the same inputs. Either way, no total is available yet.
+- Never present a partial sum as the total, and never add partial totals yourself.
+
+### Vacation fees: a code to be confirmed, an unavailable month is not 0
+
+The nature code counted as a vacation is not confirmed by the agency: every figure carries a
+"flag" ("to be confirmed by" the agency); quote it with the figure, always. A month with
+"status" "unavailable" has no figure: write "not available", never 0, do not add it to the
+others, and offer to call again later.
 
 ### What the documentation does not define
 

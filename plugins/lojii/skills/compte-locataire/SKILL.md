@@ -21,8 +21,7 @@ le solde restant à payer.
 
 `get_rental_situation` exige l'un de : bail, quittance, immeuble, propriétaire, mandat —
 ou une période complète (date de début ET date de fin). Pour un locataire nommé :
-`list_tenant_contracts` avec son nom, puis le bail renvoyé. S'il a plusieurs baux, demander
-lequel. Si l'utilisateur parle d'une période sans dates, la demander.
+`list_tenant_contracts` avec son nom, puis le bail renvoyé. S'il a plusieurs baux, demander lequel. Si l'utilisateur parle d'une période sans dates, la demander.
 
 ### Lire la réponse
 
@@ -32,9 +31,15 @@ Par ligne : "date", "label" (« Libellé de l'écriture »), "nature", "billed_t
 "passed_to_owner" (« Indique si le montant est reversé au propriétaire »). Les totaux
 ("totals") portent sur toute la sélection : "lines", "billed_ttc", "paid",
 "impaye_lojii". "nonzero_impaye_only" ne garde que les lignes dont ce solde est
-supérieur à zéro.
+supérieur à zéro. Si "window_complete" est faux, la sélection n'a pas été lue en entier : les
+totaux sont un total partiel, à dire comme tel, jamais comme le total de la sélection.
 
 Dire « solde restant à payer selon Lojii », avec le montant renvoyé.
+
+Les locataires d'un bail (`list_tenant_contracts`, "tenants") sont une ligne par personne :
+"id", "name", "lojii_ids" (tous ses identifiants Lojii) et "duplicated_in_lojii" (vrai quand
+Lojii tient deux fiches pour la même personne). Annoncer le locataire une fois ; si
+"duplicated_in_lojii" est vrai, le dire en une phrase et ne pas compter deux locataires.
 
 ### Ce que la documentation ne définit pas
 
@@ -103,9 +108,16 @@ Per line: "date", "label" ("Libellé de l'écriture"), "nature", "billed_ttc" ("
 (Lojii field "impaye": "Solde restant à payer (TTC - Payé)"), "passed_to_owner"
 ("Indique si le montant est reversé au propriétaire"). The totals ("totals") cover the
 whole selection: "lines", "billed_ttc", "paid", "impaye_lojii". "nonzero_impaye_only"
-keeps only lines where that balance is above zero.
+keeps only lines where that balance is above zero. If "window_complete" is false, the
+selection was not read whole: the totals are a partial total, to be said as such, never as
+the selection's total.
 
 Say "remaining balance per Lojii", with the amount returned.
+
+The tenants of a lease (`list_tenant_contracts`, "tenants") are one line per person: "id",
+"name", "lojii_ids" (all their Lojii identifiers) and "duplicated_in_lojii" (true when Lojii
+holds two records for the same person). Present the tenant once; if "duplicated_in_lojii" is
+true, say so in one sentence and do not count two tenants.
 
 ### What the documentation does not define
 
